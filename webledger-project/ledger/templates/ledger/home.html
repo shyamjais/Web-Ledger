@@ -1,0 +1,21 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+
+<h3>homepage</h3>
+  <a class="btn btn-primary btn-sm btn-block" href="{% url 'dealerform' %}">Create Dealer</a>
+
+<form method="POST" action "/home" class="form-inline my-2 my-lg-0">
+  {% csrf_token %}
+  <input class="form-control mr-sm-2" type="search" placeholder="Search Dealer" aria-label="Search" name="query" id="query">
+  <button class="btn btn-outline-success my-2 my-sm=0" type="submit">Search</button>
+</form>
+
+
+{% for d in alldealers %}
+<a href="{% url 'dealer' d.id %}">
+{{ d }}
+</a>
+{% endfor %}
+
+
+{% endblock %}
