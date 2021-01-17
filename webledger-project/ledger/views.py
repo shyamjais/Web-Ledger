@@ -31,7 +31,7 @@ def ledger(request, pk):
     else:
         form = LedgerForm(request.POST)
         if form.is_valid():
-            instance = form.save(commit = False)
+            form.save()
             return redirect('dealer', pk)
 
 @login_required(login_url='loginuser')

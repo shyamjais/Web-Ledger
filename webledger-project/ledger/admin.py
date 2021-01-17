@@ -4,7 +4,7 @@ from .models import *
 # Register your models here.
 class LedgerAdmin(admin.ModelAdmin):
     readonly_fields = ('date',)
-
+    list_display = ('debit','credit','new_balance','dealer_ledger_number')
 
 class ViewDealerAdmin(admin.ModelAdmin):
     filter_horizontal = ('dealer',)
