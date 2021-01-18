@@ -27,6 +27,8 @@ urlpatterns = [
     path('dealer/<int:pk>/', views.dealer, name = 'dealer'),
     path('user/', views.userpage, name = 'userpage'),
     path('expense/', views.roadexpense, name = 'roadexpense'),
+    #html to pdf of report
+    path('netbal/', views.netbal, name = 'netbal'),
 
     #AUTH
     path('login/', views.loginuser, name = 'loginuser'),

@@ -42,7 +42,7 @@ def dealer(request, pk):
     orderedledger = ledgers.order_by('-date')
 
     #paginating
-    p = Paginator(orderedledger, 2)
+    p = Paginator(orderedledger, 5)
     page_num = request.GET.get('page', 1)
     try:
         page = p.page(page_num)
@@ -67,12 +67,20 @@ def dealerform(request):
 def userpage(request):
     userobjects = ViewDealer.objects.get(user=request.user)
     dealerallowed = userobjects.dealer.all()
+    print(dealerallowed)
     ledger_list = []
-    for i in dealers.all():
-        ledger = Ledger.objects.filter(dealer=i)
+    for i in dealerallowed:
+        ledger = Ledger.objects.all().filter(i=dealer)
+        print(ledger)
         ledger_list.append(ledger)
-        print(i.name, i.mob_num)
-    print(ledger_list)
+        print(ledger_list)
+
+    # for i in dealers.all():
+    #     ledger = Ledger.objects.filter(dealer=i)
+    #     ledger_list.append(ledger)
+    #     print(i.name, i.mob_num)
+    # print(ledger_list)
+
     # ledgers = dealerallowed.dealer
     # print("Ledgers", dealerallowed.user.username)
     # print(ledgers)
@@ -89,6 +97,18 @@ def roadexpense(request):
         if form.is_valid():
             form.save()
             return redirect('home')
+
+
+#html to pdf of this financial report
+
+@login_required(login_url='loginuser')
+@allowed_users(allowed_roles=['admin'])
+def netbal(request):
+    a = BrandNew.objects.all()
+    print(a)
+    size = len(a)
+    print(size)
+    return render(request,'ledger/netbal.html',{'a':a,'size':size})
 
 # AUTHENTICATION FUNCTIONS
 
