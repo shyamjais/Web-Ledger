@@ -1,16 +1,7 @@
 {% extends 'ledger/base.html' %}
 {% block content %}
 
-<div class="row">
-  <div class ="col">
-    <div class="card card-body">
-      <form method="get">
 
-      <button class="btn btn-primary" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</div>
 <br>
 
 
@@ -42,7 +33,7 @@
   </div>
 
     <div class="col-md-9">
-      <h5>Last 15 Entries</h5>
+     
       <hr>
       <div class="card card-body">
         <a class="btn btn-primary btn-sm btn-block" href="{% url 'ledger' dealer.id %}">Create Entry</a>
@@ -69,7 +60,7 @@
             <td>{{ ledger.debit }}</td>
             <td>{{ ledger.credit }}</td>
             <td>{{ ledger.dr_cr }}</td>
-            <td>{{ ledger.new_balance }}</td>
+            <td>{{ ledger.balance }}</td>
           </tr>
           {% endfor %}
 

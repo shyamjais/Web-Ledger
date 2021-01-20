@@ -29,11 +29,11 @@ class Ledger(models.Model):
     credit = models.PositiveIntegerField("Credit",blank=True, default=0)
     paymode = models.CharField("Payment Mode",max_length=10, choices=(('Cash','Cash'),
                                                        ('Cheque','Cheque'),))
-    dr_cr = models.CharField("Dr/Cr",max_length=10, default='', choices=(('Dr','Dr'),
-                                                                 ('Cr','Cr'),))
+    new_balance = models.IntegerField(editable=False)
+    dr_cr = models.CharField("Dr/Cr",max_length=2,default='ab',editable=False)
     invoice = models.ImageField("Invoice",upload_to=None, blank=True)
     dealer = models.ForeignKey(Dealer,verbose_name="Dealer", null=True, on_delete=models.SET_NULL)
-    new_balance = models.IntegerField(editable=False)
+    balance = models.IntegerField(editable=False,default=0)
     dealer_ledger_number = models.IntegerField(editable=False,default=0)
     @property
     def cur_bal_calculator(self):
@@ -45,13 +45,24 @@ class Ledger(models.Model):
         prev = BrandNew.objects.get(dealer = self.dealer)
         return prev.ledger_number + 1
 
-    balance = models.IntegerField(default=0)
+    @property
+    def assign_dr_cr(self):
+        if(self.new_balance<0):
+            return "Cr"
+        else:
+            return "Dr"
+    
+    @property
+    def assign_positive_balance(self):
+        return abs(self.new_balance)
+
     collect_by = models.ForeignKey(Collected_by,verbose_name="Collected By", blank=True, null=True, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
           self.new_balance = self.cur_bal_calculator
           self.dealer_ledger_number = self.assign_dealer_ledger_number
-
+          self.balance = self.assign_positive_balance
+          self.dr_cr = self.assign_dr_cr
           super(Ledger, self).save(*args, **kwargs)
 
 
@@ -77,14 +88,14 @@ class RoadExpense(models.Model):
 
 class BrandNew(models.Model):
     dealer = models.ForeignKey(Dealer,on_delete=models.CASCADE)
-    dr_cr = models.CharField("Dr/Cr",max_length=10, default='', choices=(('Dr','Dr'),
-                                                                 ('Cr','Cr'),))
+    #dr_cr = models.CharField("Dr/Cr",max_length=10, default='', choices=(('Dr','Dr'),('Cr','Cr'),))
+                                                                 
     balance = models.IntegerField(default=0)
     ledger_number = models.IntegerField(default=0)
 
 def bal_one(sender, instance, **kwargs):
     if kwargs['created']:
-        a = BrandNew(dealer = instance,balance = 0,dr_cr = 'Dr',ledger_number=0)
+        a = BrandNew(dealer = instance,balance = 0,ledger_number=0)
         a.save()
 
 
@@ -94,7 +105,7 @@ def update_bal_one(sender,instance,**kwargs):
         a = BrandNew.objects.get(dealer = instance.dealer)
         print(a)
         a.delete()
-        m = BrandNew(dealer = instance.dealer,dr_cr = 'Dr',balance = instance.new_balance,ledger_number = instance.dealer_ledger_number)
+        m = BrandNew(dealer = instance.dealer,balance = instance.new_balance,ledger_number = instance.dealer_ledger_number)
         m.save()
     if  not kwargs['created']:
         m = BrandNew.objects.get(dealer = instance.dealer)

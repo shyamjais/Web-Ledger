@@ -67,20 +67,12 @@ def dealerform(request):
 def userpage(request):
     userobjects = ViewDealer.objects.get(user=request.user)
     dealerallowed = userobjects.dealer.all()
-    print(dealerallowed)
     ledger_list = []
-    for i in dealerallowed:
-        ledger = Ledger.objects.all().filter(i=dealer)
-        print(ledger)
+    for i in dealers.all():
+        ledger = Ledger.objects.filter(dealer=i)
         ledger_list.append(ledger)
-        print(ledger_list)
-
-    # for i in dealers.all():
-    #     ledger = Ledger.objects.filter(dealer=i)
-    #     ledger_list.append(ledger)
-    #     print(i.name, i.mob_num)
-    # print(ledger_list)
-
+        print(i.name, i.mob_num)
+    print(ledger_list)
     # ledgers = dealerallowed.dealer
     # print("Ledgers", dealerallowed.user.username)
     # print(ledgers)
@@ -97,18 +89,6 @@ def roadexpense(request):
         if form.is_valid():
             form.save()
             return redirect('home')
-
-
-#html to pdf of this financial report
-
-@login_required(login_url='loginuser')
-@allowed_users(allowed_roles=['admin'])
-def netbal(request):
-    a = BrandNew.objects.all()
-    print(a)
-    size = len(a)
-    print(size)
-    return render(request,'ledger/netbal.html',{'a':a,'size':size})
 
 # AUTHENTICATION FUNCTIONS
 
@@ -131,3 +111,11 @@ def logoutuser(request):
     if request.method == 'POST':
         logout(request)
         return redirect('loginuser')
+
+
+def netbal(request):
+    a = BrandNew.objects.all()
+    print(a)
+    size = len(a)
+    print(size)
+    return render(request,'ledger/netbal.html',{'a':a,'size':size})
