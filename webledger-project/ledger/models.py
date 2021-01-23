@@ -30,7 +30,7 @@ class Ledger(models.Model):
     paymode = models.CharField("Payment Mode",max_length=10, choices=(('Cash','Cash'),
                                                        ('Cheque','Cheque'),))
     new_balance = models.IntegerField(editable=False)
-    dr_cr = models.CharField("Dr/Cr",max_length=2,default='ab',editable=False)
+    dr_cr = models.CharField("Dr/Cr",max_length=2,default='nil',editable=False)
     invoice = models.ImageField("Invoice",upload_to=None, blank=True)
     dealer = models.ForeignKey(Dealer,verbose_name="Dealer", null=True, on_delete=models.SET_NULL)
     balance = models.IntegerField(editable=False,default=0)
@@ -51,7 +51,7 @@ class Ledger(models.Model):
             return "Cr"
         else:
             return "Dr"
-    
+
     @property
     def assign_positive_balance(self):
         return abs(self.new_balance)
@@ -66,10 +66,9 @@ class Ledger(models.Model):
           super(Ledger, self).save(*args, **kwargs)
 
 
-    def __str__(self):
-        return str(self.new_balance)
 
-
+    class Meta:
+        db_table= "led"
 
 class ViewDealer(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
@@ -79,17 +78,17 @@ class ViewDealer(models.Model):
         verbose_name_plural = "Dealer Permission Area"
 
 class RoadExpense(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     fooding = models.PositiveIntegerField(blank=True, default=0)
     fuel = models.PositiveIntegerField(blank=True, default=0)
-    misc = models.TextField()
+    misc = models.TextField(blank=True)
 
 
 
 class BrandNew(models.Model):
     dealer = models.ForeignKey(Dealer,on_delete=models.CASCADE)
     #dr_cr = models.CharField("Dr/Cr",max_length=10, default='', choices=(('Dr','Dr'),('Cr','Cr'),))
-                                                                 
+
     balance = models.IntegerField(default=0)
     ledger_number = models.IntegerField(default=0)
 
@@ -101,9 +100,9 @@ def bal_one(sender, instance, **kwargs):
 
 def update_bal_one(sender,instance,**kwargs):
     if kwargs['created']:
-        print(instance.dealer)
+
         a = BrandNew.objects.get(dealer = instance.dealer)
-        print(a)
+
         a.delete()
         m = BrandNew(dealer = instance.dealer,balance = instance.new_balance,ledger_number = instance.dealer_ledger_number)
         m.save()
@@ -115,10 +114,10 @@ def update_bal_one(sender,instance,**kwargs):
             try:
                 obj = Ledger.objects.get(dealer_ledger_number = cur_ledger_number)
             except:
-                print('Found')
+
                 break
             cur_ledger_number-=1
-        print(cur_ledger_number)
+
         if cur_ledger_number == 1:
             prev = 0
         else:
@@ -143,10 +142,10 @@ def update_bal_one(sender,instance,**kwargs):
         BN.ledger_number = i
         BN.save()
         i = i+1
-        print(prev)
+
         prev = new_balance
         while(i!=latest_ledger_number):
-            print(i)
+            
             old = Ledger.objects.get(dealer_ledger_number = i)
             #new = Ledger(dealer_ledger_number=i,debit=old.debit,credit=old.credit,collect_by=old.collect_by,dealer=instance.dealer,paymode=old.pay)
             old.delete()

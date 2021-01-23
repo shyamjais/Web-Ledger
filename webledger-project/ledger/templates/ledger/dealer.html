@@ -33,7 +33,7 @@
   </div>
 
     <div class="col-md-9">
-     
+
       <hr>
       <div class="card card-body">
         <a class="btn btn-primary btn-sm btn-block" href="{% url 'ledger' dealer.id %}">Create Entry</a>
@@ -52,7 +52,7 @@
 
           {% for ledger in orderedledger %}
           <tr>
-            <td>{{ ledger.date }}</td>
+            <td>{{ ledger.date|date:"d M Y" }}  {{ ledger.date|time:"h:i A" }}</td>
             <td>{{ ledger.particulars }}</td>
             <td>{{ ledger.invoice }}</td>
             <td>{{ ledger.paymode }}</td>

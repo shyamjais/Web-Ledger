@@ -22,6 +22,7 @@
           {% if request.user|has_group:"admin" %}
           <a class="nav-link" href="{% url 'home' %}">home</a>
           <a class="nav-link" href="{% url 'netbal' %}">Dealer Report</a>
+          <a class="nav-link" href="{% url 'dailytrans' %}">Day To Day records</a>
           {% endif %}
           <a class="nav-link" href="{% url 'roadexpense' %}">expense</a>
           <form action="{% url 'logoutuser'  %}" method="POST">

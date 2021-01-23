@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -9,7 +8,6 @@ from .models import *
 from .forms import LedgerForm, DealerForm, RoadExpenseForm
 from .decorators import unauthenticated_user, allowed_users, admin_only
 from django.core.paginator import Paginator, EmptyPage
-
 #LEDGER
 @login_required(login_url='loginuser')
 @admin_only
@@ -67,12 +65,20 @@ def dealerform(request):
 def userpage(request):
     userobjects = ViewDealer.objects.get(user=request.user)
     dealerallowed = userobjects.dealer.all()
+    print(dealerallowed)
     ledger_list = []
-    for i in dealers.all():
-        ledger = Ledger.objects.filter(dealer=i)
+    for i in dealerallowed:
+        ledger = Ledger.objects.all().filter(i=dealer)
+        print(ledger)
         ledger_list.append(ledger)
-        print(i.name, i.mob_num)
-    print(ledger_list)
+        print(ledger_list)
+
+    # for i in dealers.all():
+    #     ledger = Ledger.objects.filter(dealer=i)
+    #     ledger_list.append(ledger)
+    #     print(i.name, i.mob_num)
+    # print(ledger_list)
+
     # ledgers = dealerallowed.dealer
     # print("Ledgers", dealerallowed.user.username)
     # print(ledgers)
@@ -89,6 +95,38 @@ def roadexpense(request):
         if form.is_valid():
             form.save()
             return redirect('home')
+
+
+
+# report to be converted into pdf from html
+
+@login_required(login_url='loginuser')
+@allowed_users(allowed_roles=['admin'])
+def netbal(request):
+    a = BrandNew.objects.all()
+    
+    size = len(a)
+
+    return render(request,'ledger/netbal.html',{'a':a,'size':size})
+
+
+@login_required(login_url='loginuser')
+@allowed_users(allowed_roles=['admin'])
+def dailytrans(request):
+    if request.method == "POST":
+        fromdate = request.POST.get('fromdate')
+        todate = request.POST.get('todate')
+
+        # if fromdate == todate:
+        #     ledgers = Ledger.objects.raw('select * from led where date between "'+fromdate+'" and DATEADD(day,1,"'+todate+'")')
+        # else:
+        ledgers = Ledger.objects.raw('select * from led where date between "'+fromdate+'" and "'+todate+'"')
+
+        context = {'ledgers': ledgers}
+        return render(request,'ledger/dailytrans.html', context)
+    else:
+        return render(request,'ledger/dailytrans.html')
+
 
 # AUTHENTICATION FUNCTIONS
 
@@ -111,11 +149,3 @@ def logoutuser(request):
     if request.method == 'POST':
         logout(request)
         return redirect('loginuser')
-
-
-def netbal(request):
-    a = BrandNew.objects.all()
-    print(a)
-    size = len(a)
-    print(size)
-    return render(request,'ledger/netbal.html',{'a':a,'size':size})
