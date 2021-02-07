@@ -27,8 +27,9 @@ class Ledger(models.Model):
     particulars = models.CharField("Particulars",max_length=100,blank=True)
     debit = models.PositiveIntegerField("Debit",blank=True, default=0)
     credit = models.PositiveIntegerField("Credit",blank=True, default=0)
-    paymode = models.CharField("Payment Mode",max_length=10, choices=(('Cash','Cash'),
-                                                       ('Cheque','Cheque'),))
+    paymode = models.CharField("Payment Mode",max_length=25, choices=(('Cash','Cash'),
+                                                       ('Cheque','Cheque'),
+                                                       ('No Money Collected','No Money Collected'),))
     new_balance = models.IntegerField(editable=False)
     dr_cr = models.CharField("Dr/Cr",max_length=2,default='nil',editable=False)
     invoice = models.ImageField("Invoice",upload_to=None, blank=True)
@@ -56,7 +57,7 @@ class Ledger(models.Model):
     def assign_positive_balance(self):
         return abs(self.new_balance)
 
-    collect_by = models.ForeignKey(Collected_by,verbose_name="Collected By", blank=True, null=True, on_delete=models.CASCADE)
+    collect_by = models.ForeignKey(Collected_by,verbose_name="Collected By", blank=True, null=True, on_delete=models.SET_NULL)
 
     def save(self, *args, **kwargs):
           self.new_balance = self.cur_bal_calculator
@@ -83,6 +84,8 @@ class RoadExpense(models.Model):
     fuel = models.PositiveIntegerField(blank=True, default=0)
     misc = models.TextField(blank=True)
 
+    # def __str__(self):
+    #     return self.user
 
 
 class BrandNew(models.Model):
@@ -145,7 +148,7 @@ def update_bal_one(sender,instance,**kwargs):
 
         prev = new_balance
         while(i!=latest_ledger_number):
-            
+
             old = Ledger.objects.get(dealer_ledger_number = i)
             #new = Ledger(dealer_ledger_number=i,debit=old.debit,credit=old.credit,collect_by=old.collect_by,dealer=instance.dealer,paymode=old.pay)
             old.delete()

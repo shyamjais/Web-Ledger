@@ -4,39 +4,28 @@
 
 <br>
 
-
-<div class="row">
-  <div class="col-md-2">
-    <hr>
-    <div class="card card-body">
-
-      <table class="table table-sm">
-
-        <tr>
-          <th>Dealer</th>
-        </tr>
-
-        <tr>
-          <th>{{ dealer.name }}</th>
-        </tr>
-
-        <tr>
-          <th>{{ dealer.mob_num }}</th>
-        </tr>
-
-        <tr>
-          <th>{{ dealer.address }}</th>
-        </tr>
-
-      </table>
-    </div>
-  </div>
-
-    <div class="col-md-9">
-
-      <hr>
+<div class="">
+      <div class="d-flex justify-content-between" style="padding:2.5%">
+        <div class="d-flex">
+          <div class="d-flex" style="padding-right:5%;">
+            <p style="font-weight:bold; margin:0.5rem;">Name: </p>
+            <p style="margin:0.5rem;">{{ dealer.name }}</p>
+          </div>
+          <div class="d-flex" style="padding-right:5%;">
+            <p style="font-weight:bold; margin:0.5rem;">Address: </p>
+            <p style="margin:0.5rem;">{{ dealer.address }}</p>
+          </div>
+          <div class="d-flex" style="padding:0 0.25%;">
+            <p style="font-weight:bold; margin:0.5rem;">Mobile: </p>
+            <p style="margin:0.5rem;">{{ dealer.mob_num }}</p>
+          </div>
+        </div>
+        <div>
+          <a class="btn btn-primary btn-block" href="{% url 'ledger' dealer.id %}" style="margin:0.5rem;">Create Entry</a>
+        </div>
+      </div>
+    <div class="" style="padding:0% 2.5%;">
       <div class="card card-body">
-        <a class="btn btn-primary btn-sm btn-block" href="{% url 'ledger' dealer.id %}">Create Entry</a>
         <table class="table table-sm">
           <tr>
             <th>Date</th>
@@ -68,13 +57,13 @@
         </div>
       </div>
     </div>
-
+<div class="d-flex justify-content-center">
 {% if orderedledger.has_previous %}
-<a href="?page={{orderedledger.previous_page_number}}">Next Page</a>
+<a class="btn btn-outline-primary" style="margin:0.5rem;" href="?page={{orderedledger.previous_page_number}}">Next Page</a>
 {% endif %}
 {% if orderedledger.has_next %}
-<a href="?page={{orderedledger.next_page_number}}">Previous Page</a>
+<a class="btn btn-outline-primary" style="margin:0.5rem;" href="?page={{orderedledger.next_page_number}}">Previous Page</a>
 {% endif %}
-
+</div>
 
 {% endblock %}

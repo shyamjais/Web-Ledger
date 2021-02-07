@@ -6,7 +6,7 @@ class LedgerForm(ModelForm):
         model = Ledger
         fields = ['particulars', 'debit', 'credit', 'paymode', 'invoice', 'dealer', 'collect_by']
 
-        
+
 
 class DealerForm(ModelForm):
     class Meta:

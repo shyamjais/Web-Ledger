@@ -1,53 +1,30 @@
 {% extends 'ledger/base.html' %}
+{% block title %}Transactions{% endblock %}
 {% block content %}
 
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Daily Transactions</title>
-  </head>
+
   <body>
-    <h1>records as per date selected</h1>
 
-    <form method="POST">
-      {% csrf_token %}
-    From :<input type="date" name="fromdate"/>
-    To :<input type="date" name="todate"/>
-    <input type="submit" value="Search"/>
 
-    <table class="table table-sm">
 
-      <tr>
-        <th>Dealer</th>
-        <th>Date</th>
-        <th>Particulars</th>
-        <th>Invoice</th>
-        <th>Mode</th>
-        <th>Debit</th>
-        <th>Credit</th>
-        <th>Dr/Cr</th>
-        <th>Balance</th>
-      </tr>
 
-      {% for ledger in ledgers %}
-      <tr>
-        <td>{{ ledger.dealer }}</td>
-        <td>{{ ledger.date|date:"d M Y" }}  {{ ledger.date|time:"h:i A" }}</td>
-        <td>{{ ledger.particulars }}</td>
-        <td>{{ ledger.invoice }}</td>
-        <td>{{ ledger.paymode }}</td>
-        <td>{{ ledger.debit }}</td>
-        <td>{{ ledger.credit }}</td>
-        <td>{{ ledger.dr_cr }}</td>
-        <td>{{ ledger.balance }}</td>
-      </tr>
-      {% endfor %}
+      <form method='POST' style="width:400px; margin:auto;" action="{% url 'day_range_rec' %}">
+        <h1 style="padding-left:4rem; padding-top:1rem">Transactions</h1>
+        {% csrf_token %}
+        <div class="form-group" style="padding:0.5rem">
+          <label style="padding-down:1rem">From:</label>
+          <input class="form-control"  type="date" name="fromdate">
+        </div>
+        <div class="form-group" style="padding:0.5rem">
+          <label style="padding-down:1rem">To:</label>
+          <input class="form-control" type="date" name="todate">
+        </div>
+        <button class="btn btn-outline-primary" style="width:100px; margin:0.5rem;" type='submit'>GET PDF</button>
 
-      </table>
       </form>
+
   </body>
-</html>
+
 
 
 {% endblock %}

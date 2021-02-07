@@ -28,8 +28,11 @@ urlpatterns = [
     path('user/', views.userpage, name = 'userpage'),
     path('expense/', views.roadexpense, name = 'roadexpense'),
     #report to convert in pdf
-    path('netbal/', views.netbal, name = 'netbal'),
     path('dailytrans/', views.dailytrans, name = 'dailytrans'),
+
+    #pdf rendering
+    path('netbalpdf/', views.netbal_pdf_view, name = 'netbalpdf'),
+    path('day_range_rec/', views.day_range_rec, name = 'day_range_rec'),
 
     #AUTH
     path('login/', views.loginuser, name = 'loginuser'),

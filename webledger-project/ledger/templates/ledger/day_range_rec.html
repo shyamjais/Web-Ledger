@@ -1,0 +1,40 @@
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Transactions PDF</title>
+  
+  </head>
+  <body>
+    <h1>Transactions from {{ fromdate }} to {{ todate }}</h1>
+
+
+    <table class="table table-sm">
+
+      <tr>
+        <th>Dealer</th>
+        <th>Date</th>
+        <th>Particulars</th>
+        <th>Mode</th>
+        <th>Debit</th>
+        <th>Credit</th>
+        <th>Dr/Cr</th>
+        <th>Balance</th>
+      </tr>
+
+      {% for ledger in ledgers %}
+      <tr>
+        <td>{{ ledger.dealer }}</td>
+        <td>{{ ledger.date|date:"d M Y" }}  {{ ledger.date|time:"h:i A" }}</td>
+        <td>{{ ledger.particulars }}</td>
+        <td>{{ ledger.paymode }}</td>
+        <td>{{ ledger.debit }}</td>
+        <td>{{ ledger.credit }}</td>
+        <td>{{ ledger.dr_cr }}</td>
+        <td>{{ ledger.balance }}</td>
+      </tr>
+      {% endfor %}
+
+      </table>
+  </body>
+</html>
