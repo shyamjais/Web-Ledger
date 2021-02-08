@@ -10,7 +10,8 @@ from .decorators import unauthenticated_user, allowed_users, admin_only
 from django.core.paginator import Paginator, EmptyPage
 
 # for current date displaying in netbal_pdf_view
-from datetime import date
+import datetime
+from datetime import date, timedelta
 #for rendering pdf
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -48,30 +49,45 @@ def netbal_pdf_view(request):
 
 
 def day_range_rec(request):
-    template_path = 'ledger/day_range_rec.html'
-    print(request.GET)
-    print(request.POST)
-    fromdate = request.POST.get('fromdate')
-    todate = request.POST.get('todate')
+    if request.method == 'GET':
+        return render(request,'ledger/dailytrans.html')
 
-    ledgers = Ledger.objects.raw('select * from led where date between "'+fromdate+'" and "'+todate+'"')
-    context = {'ledgers': ledgers, 'fromdate':fromdate, 'todate': todate}
-    # Create a Django response object, and specify content_type as pdf
-    response = HttpResponse(content_type='application/pdf')
-    #if direct download needed uncomment line below
-    #response['Content-Disposition'] = 'attachment; filename="report.pdf"'
-    response['Content-Disposition'] = 'filename="report.pdf"'
-    # find the template and render it.
-    template = get_template(template_path)
-    html = template.render(context)
+    else:
+        template_path = 'ledger/day_range_rec.html'
+        fromdate = request.POST.get('fromdate')
+        todate = request.POST.get('todate')
+        # To force selection of both the date fields
+        if fromdate == "" or todate == "":
+            context = {"error": "Please select both the fields"}
+            return render(request,'ledger/dailytrans.html', context)
 
-    # create a pdf
-    pisa_status = pisa.CreatePDF(
-       html, dest=response)
-    # if error then show some funy view
-    if pisa_status.err:
-       return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    return response
+        # To ensure selected date range is valid
+        today = date.today()
+        d1 = today.strftime("%Y-%m-%d")
+        tomorrow = today + timedelta(1)
+        d2 =  tomorrow.strftime("%Y-%m-%d")
+        if fromdate>todate or fromdate>d1 or todate>d2:
+            context = {"error": "selected date range is invalid"}
+            return render(request,'ledger/dailytrans.html', context)
+
+        ledgers = Ledger.objects.raw('select * from led where date between "'+fromdate+'" and "'+todate+'"')
+        context = {'ledgers': ledgers, 'fromdate':fromdate, 'todate': todate}
+        # Create a Django response object, and specify content_type as pdf
+        response = HttpResponse(content_type='application/pdf')
+        #if direct download needed uncomment line below
+        #response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+        response['Content-Disposition'] = 'filename="report.pdf"'
+        # find the template and render it.
+        template = get_template(template_path)
+        html = template.render(context)
+
+        # create a pdf
+        pisa_status = pisa.CreatePDF(
+           html, dest=response)
+        # if error then show some funy view
+        if pisa_status.err:
+           return HttpResponse('We had some errors <pre>' + html + '</pre>')
+        return response
 
 
 #LEDGER
@@ -135,8 +151,9 @@ def userpage(request):
     print(dealerallowed)
     ledger_list = []
     for i in dealerallowed:
+        print(i)
         ledger = Ledger.objects.all().filter(i=dealer)
-        print(ledger)
+        print(ledger.cleaned_data)
         ledger_list.append(ledger)
         print(ledger_list)
 
@@ -151,7 +168,7 @@ def userpage(request):
     # print(ledgers)
     # print("Loop")
 
-    context = {'dealerallowed':dealerallowed}
+    context = {'dealerallowed':dealerallowed, 'ledger_list':ledger_list}
     return render(request, 'ledger/user.html', context)
 
 def roadexpense(request):
