@@ -30,6 +30,7 @@ class Ledger(models.Model):
     paymode = models.CharField("Payment Mode",max_length=25, choices=(('Cash','Cash'),
                                                        ('Cheque','Cheque'),
                                                        ('No Money Collected','No Money Collected'),))
+    isChequeCleared = models.BooleanField(editable=False, blank=True, null=True)                                                   
     new_balance = models.IntegerField(editable=False)
     dr_cr = models.CharField("Dr/Cr",max_length=2,default='nil',editable=False)
     invoice = models.ImageField("Invoice",upload_to=None, blank=True)
@@ -73,7 +74,7 @@ class Ledger(models.Model):
 
 class ViewDealer(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    dealer = models.ManyToManyField(Dealer, related_name="dealer")
+    dealer = models.ManyToManyField(Dealer, related_name="dealer", blank= True)
 
     class Meta:
         verbose_name_plural = "Dealer Permission Area"
@@ -115,7 +116,7 @@ def update_bal_one(sender,instance,**kwargs):
         cur_ledger_number = latest_ledger_number -1
         while(cur_ledger_number!=1):
             try:
-                obj = Ledger.objects.get(dealer_ledger_number = cur_ledger_number)
+                obj = Ledger.objects.get(dealer_ledger_number = cur_ledger_number,dealer = instanace.dealer)
             except:
 
                 break
@@ -124,7 +125,7 @@ def update_bal_one(sender,instance,**kwargs):
         if cur_ledger_number == 1:
             prev = 0
         else:
-            prev = Ledger.objects.get(dealer_ledger_number = cur_ledger_number-1)
+            prev = Ledger.objects.get(dealer_ledger_number = cur_ledger_number-1,dealer= instance.dealer)
             prev = prev.new_balance
         i = cur_ledger_number
         debit = instance.debit
@@ -149,7 +150,7 @@ def update_bal_one(sender,instance,**kwargs):
         prev = new_balance
         while(i!=latest_ledger_number):
 
-            old = Ledger.objects.get(dealer_ledger_number = i)
+            old = Ledger.objects.get(dealer_ledger_number = i,dealer=instance.dealer)
             #new = Ledger(dealer_ledger_number=i,debit=old.debit,credit=old.credit,collect_by=old.collect_by,dealer=instance.dealer,paymode=old.pay)
             old.delete()
             b = BrandNew.objects.get(dealer = instance.dealer)
@@ -163,7 +164,7 @@ def update_bal_one(sender,instance,**kwargs):
             old.save()
             prev = old.new_balance
             i = i+1
-        Ledger.objects.get(dealer_ledger_number = latest_ledger_number).delete()
+        Ledger.objects.get(dealer_ledger_number = latest_ledger_number,dealer = instance.dealer).delete()
 
 
 

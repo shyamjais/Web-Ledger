@@ -8,11 +8,15 @@ class LedgerAdmin(admin.ModelAdmin):
 
 
 class ViewDealerAdmin(admin.ModelAdmin):
+    list_display = ('user',)
     filter_horizontal = ('dealer',)
+
+class RoadExpenseAdmin(admin.ModelAdmin):
+    list_display = ('user',)
 
 
 admin.site.register(Dealer)
 admin.site.register(Ledger, LedgerAdmin)
 admin.site.register(Collected_by)
 admin.site.register(ViewDealer, ViewDealerAdmin)
-admin.site.register(RoadExpense)
+admin.site.register(RoadExpense, RoadExpenseAdmin)

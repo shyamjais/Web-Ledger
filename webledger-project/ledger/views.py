@@ -111,7 +111,10 @@ def ledger(request, pk):
         return render(request, 'ledger/ledger.html', {'form':form})
     else:
         form = LedgerForm(request.POST)
+        print(form)
         if form.is_valid():
+            # if not form.paymode == Cheque:
+            # form.isChequeCleared = False
             form.save()
             return redirect('dealer', pk)
 
@@ -146,29 +149,37 @@ def dealerform(request):
 
 @login_required(login_url='loginuser')
 def userpage(request):
-    userobjects = ViewDealer.objects.get(user=request.user)
-    dealerallowed = userobjects.dealer.all()
-    print(dealerallowed)
-    ledger_list = []
-    for i in dealerallowed:
-        print(i)
-        ledger = Ledger.objects.all().filter(i=dealer)
-        print(ledger.cleaned_data)
-        ledger_list.append(ledger)
-        print(ledger_list)
-
-    # for i in dealers.all():
-    #     ledger = Ledger.objects.filter(dealer=i)
-    #     ledger_list.append(ledger)
-    #     print(i.name, i.mob_num)
-    # print(ledger_list)
-
-    # ledgers = dealerallowed.dealer
-    # print("Ledgers", dealerallowed.user.username)
-    # print(ledgers)
-    # print("Loop")
-
-    context = {'dealerallowed':dealerallowed, 'ledger_list':ledger_list}
+    try :
+        userobjects = ViewDealer.objects.get(user=request.user)
+        dealerallowed = userobjects.dealer.all()
+    except :
+        context = {"message": "No dealers allowed to view"}
+        return render(request, 'ledger/user.html', context)
+    # list l is storing data of all allowed dealer and their ledgers
+    l = []
+    for d in dealerallowed:
+        dict = {}
+        dict["name"] = d.name
+        dict["address"] = d.address
+        dict["mobile"] = d.mob_num
+        #leg list for storing ledgers of the current iterating dealer
+        leg = []
+        bn = BrandNew.objects.get(dealer = d.id)
+        led_number = bn.ledger_number
+        k = 0
+        while(k!=30):
+            try:
+                led = Ledger.objects.get(dealer = d,dealer_ledger_number = led_number-k)
+                leg.append(led)
+            except:
+                break
+            k += 1
+        dict["ledger"] = leg
+        l.append(dict)
+    if len(dealerallowed) == 0:
+        context = {"message": "No dealers allowed to view"}
+    else:
+        context = {"ledgers":l}
     return render(request, 'ledger/user.html', context)
 
 def roadexpense(request):

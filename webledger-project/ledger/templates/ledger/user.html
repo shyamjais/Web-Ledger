@@ -1,9 +1,10 @@
 {% extends 'ledger/base.html' %}
 {% block content %}
 
+{{ message }}
 
-
-{% for dealer in dealerallowed %}
+{% for ledger in ledgers %}
+<p>Dealer Name: {{ ledger.name }}</p> <p>Address: {{ ledger.address}}</p>
 <table class="table table-sm">
   <tr>
     <th>Date</th>
@@ -17,17 +18,17 @@
     <th>Balance</th>
   </tr>
 
-  {% for ledger in ledger_list %}
+  {% for l in ledger.ledger %}
   <tr>
-    <td>{{ ledger.date }}</td>
-    <td>{{ ledger.particulars }}</td>
-    <td>{{ ledger.invoice }}</td>
-    <td>{{ ledger.paymode }}</td>
-    <td>{{ ledger.collect_by }}</td>
-    <td>{{ ledger.debit }}</td>
-    <td>{{ ledger.credit }}</td>
-    <td>{{ ledger.dr_cr }}</td>
-    <td>{{ ledger.balance }}</td>
+    <td>{{ l.date }}</td>
+    <td>{{ l.particulars }}</td>
+    <td>{{ l.invoice }}</td>
+    <td>{{ l.paymode }}</td>
+    <td>{{ l.collect_by }}</td>
+    <td>{{ l.debit }}</td>
+    <td>{{ l.credit }}</td>
+    <td>{{ l.dr_cr }}</td>
+    <td>{{ l.balance }}</td>
   </tr>
   {% endfor %}
 
