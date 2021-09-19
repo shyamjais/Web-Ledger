@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,7 +27,7 @@ SECRET_KEY = 'oy-yhetr8b)q8(-(u&2*0_7a(_8@b)@xby*qm^lf!51)(a)3b2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['webledger.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -74,15 +76,39 @@ TEMPLATES = [
 WSGI_APPLICATION = 'webledger.wsgi.application'
 
 
-# Database
+# Database for local development
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
+#
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+#  Heroku Free Database
+
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default="postgres://rmbdrctrlkfxrr:a92b5e1279d05cd04cf93c431d4164db6b560c9f331a4a952fa6ff3ca08e3284@ec2-108-128-104-50.eu-west-1.compute.amazonaws.com:5432/degk4velgi7vka"
+#     )
+# }
+
+
+
+# Postgres Database for deployment
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'Web-Ledger_DB',
+#         'USER': 'postgres',
+#         'PASSWORD':'shyam123',
+#         'HOST':'localhost',
+#         'PORT':'5432'
+#     }
+# }
 
 
 # Password validation
@@ -115,10 +141,19 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

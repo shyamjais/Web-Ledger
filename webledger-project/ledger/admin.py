@@ -4,7 +4,7 @@ from .models import *
 # Register your models here.
 class LedgerAdmin(admin.ModelAdmin):
     readonly_fields = ('date',)
-    list_display = ('dealer','debit','credit','dr_cr','balance','dealer_ledger_number')
+    list_display = ('id','dealer','paymode','isChequeCleared','debit','credit','dr_cr','balance','dealer_ledger_number')
 
 
 class ViewDealerAdmin(admin.ModelAdmin):
@@ -12,6 +12,7 @@ class ViewDealerAdmin(admin.ModelAdmin):
     filter_horizontal = ('dealer',)
 
 class RoadExpenseAdmin(admin.ModelAdmin):
+    readonly_fields = ('date',)
     list_display = ('user',)
 
 
